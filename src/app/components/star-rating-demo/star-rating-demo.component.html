@@ -1,0 +1,123 @@
+<div class="app-container">
+  <header class="app-header">
+    <h1>Angular Star Rating Demo</h1>
+    <p>Custom Angular Star Rating Component with ControlValueAccessor</p>
+  </header>
+
+  <main class="main-content">
+    <div class="demo-section">
+      <h2>Star Rating Demo</h2>
+
+      <form [formGroup]="ratingForm" (ngSubmit)="onSubmit()" class="rating-form">
+        <div class="form-group">
+          <label for="rating">Rate this experience:</label>
+          <app-star-rating
+            formControlName="rating"
+            id="rating"
+            [maxStars]="5">
+          </app-star-rating>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="ratingForm.invalid">
+            Submit Rating
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="resetForm()">
+            Reset
+          </button>
+        </div>
+      </form>
+
+      <div class="control-buttons">
+        <h3>Component Controls</h3>
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="enableRating()"
+          [disabled]="!isRatingDisabled">
+          Enable Rating
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-warning"
+          (click)="disableRating()"
+          [disabled]="isRatingDisabled">
+          Disable Rating
+        </button>
+      </div>
+
+      <div class="form-status" *ngIf="ratingForm">
+        <h3>Form Status</h3>
+        <div class="status-info">
+          <p><strong>Current Value:</strong> {{ currentRatingValue }}</p>
+          <p><strong>Form Valid:</strong> {{ ratingForm.valid ? 'Yes' : 'No' }}</p>
+          <p><strong>Form Touched:</strong> {{ ratingForm.touched ? 'Yes' : 'No' }}</p>
+          <p><strong>Rating Disabled:</strong> {{ isRatingDisabled ? 'Yes' : 'No' }}</p>
+        </div>
+      </div>
+
+      <div class="submitted-result" *ngIf="submittedValue !== null">
+        <h3>Submitted Result</h3>
+        <div class="result-display">
+          <p>You rated: <strong>{{ submittedValue }}/5 stars</strong></p>
+          <div class="result-stars">
+            <span
+              *ngFor="let star of [1,2,3,4,5]"
+              class="result-star"
+              [class.filled]="star <= submittedValue">
+              ★
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="documentation">
+      <h2>Implementation Details</h2>
+      <div class="details-grid">
+        <div class="detail-card">
+          <h4>ControlValueAccessor Methods</h4>
+          <ul>
+            <li>✅ writeValue()</li>
+            <li>✅ registerOnChange()</li>
+            <li>✅ registerOnTouched()</li>
+            <li>✅ setDisabledState()</li>
+          </ul>
+        </div>
+
+        <div class="detail-card">
+          <h4>Features</h4>
+          <ul>
+            <li>✅ 5 clickable stars</li>
+            <li>✅ Hover effects</li>
+            <li>✅ Disabled state support</li>
+            <li>✅ Form integration</li>
+            <li>✅ Accessibility support</li>
+          </ul>
+        </div>
+
+        <div class="detail-card">
+          <h4>Form Integration</h4>
+          <ul>
+            <li>✅ Reactive Forms</li>
+            <li>✅ Form validation</li>
+            <li>✅ Enable/Disable controls</li>
+            <li>✅ Form status tracking</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <p>Built with Angular {{ '20.1.0' }} | Custom ControlValueAccessor Implementation</p>
+  </footer>
+</div>

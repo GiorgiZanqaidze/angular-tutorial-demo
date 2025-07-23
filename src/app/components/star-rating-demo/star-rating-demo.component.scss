@@ -1,0 +1,330 @@
+// Copy styles from app.scss for star rating demo
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.app-header {
+  background: white;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 2.5rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+  }
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.demo-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 0.5rem;
+  }
+}
+
+.rating-form {
+  margin-bottom: 2rem;
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 1.1rem;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+}
+
+.control-buttons {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    font-size: 1.4rem;
+  }
+
+  button {
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.form-status {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #e9ecef;
+  border-radius: 8px;
+  border-left: 4px solid #17a2b8;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    font-size: 1.4rem;
+  }
+
+  .status-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+
+    p {
+      margin: 0.25rem 0;
+      padding: 0.5rem;
+      background: white;
+      border-radius: 4px;
+
+      strong {
+        color: #2c3e50;
+      }
+    }
+  }
+}
+
+.submitted-result {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #155724;
+    font-size: 1.4rem;
+  }
+
+  .result-display {
+    text-align: center;
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #155724;
+    }
+
+    .result-stars {
+      .result-star {
+        font-size: 2.5rem;
+        color: #ccc;
+        margin: 0 0.2rem;
+
+        &.filled {
+          color: #ffd700;
+        }
+      }
+    }
+  }
+}
+
+.documentation {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    border-bottom: 3px solid #9b59b6;
+    padding-bottom: 0.5rem;
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+
+    .detail-card {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-top: 4px solid #9b59b6;
+
+      h4 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #2c3e50;
+        font-size: 1.2rem;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 1.2rem;
+
+        li {
+          margin-bottom: 0.5rem;
+          color: #495057;
+
+          &:before {
+            content: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.app-footer {
+  background: #2c3e50;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+// Button styles
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+    }
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &.btn-primary {
+    background: #3498db;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #2980b9;
+    }
+  }
+
+  &.btn-secondary {
+    background: #95a5a6;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #7f8c8d;
+    }
+  }
+
+  &.btn-success {
+    background: #28a745;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #218838;
+    }
+  }
+
+  &.btn-warning {
+    background: #ffc107;
+    color: #212529;
+
+    &:hover:not(:disabled) {
+      background: #e0a800;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .app-header {
+    padding: 1.5rem;
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .demo-section,
+  .documentation {
+    padding: 1.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .control-buttons {
+    button {
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}

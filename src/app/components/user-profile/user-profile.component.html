@@ -1,0 +1,365 @@
+<div class="profile-container" *ngIf="!isLoading; else loadingTemplate">
+  <!-- Success/Error Messages -->
+  <div class="message success" *ngIf="successMessage">
+    <i class="icon">✓</i>
+    {{ successMessage }}
+  </div>
+
+  <div class="message error" *ngIf="errorMessage">
+    <i class="icon">✗</i>
+    {{ errorMessage }}
+  </div>
+
+  <div class="profile-header">
+    <div class="avatar-section">
+      <div class="avatar-container">
+        <img
+          *ngIf="user?.avatar; else initialsAvatar"
+          [src]="user?.avatar"
+          [alt]="getFullName()"
+          class="avatar">
+
+        <ng-template #initialsAvatar>
+          <div class="avatar-initials">
+            {{ getUserInitials() }}
+          </div>
+        </ng-template>
+
+        <div class="avatar-overlay" *ngIf="isUploadingAvatar">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <div class="avatar-actions" *ngIf="isEditing">
+        <input
+          type="file"
+          id="avatar-upload"
+          accept="image/*"
+          (change)="onAvatarChange($event)"
+          class="file-input">
+        <label for="avatar-upload" class="btn btn-secondary btn-sm">
+          <i class="icon">📷</i>
+          Change Photo
+        </label>
+      </div>
+    </div>
+
+    <div class="user-info">
+      <h1 class="user-name">{{ getFullName() }}</h1>
+      <p class="user-title" *ngIf="user?.jobTitle">{{ user?.jobTitle }}</p>
+      <p class="user-company" *ngIf="user?.company">{{ user?.company }}</p>
+      <p class="user-location" *ngIf="user?.location">
+        <i class="icon">📍</i>
+        {{ user?.location }}
+      </p>
+    </div>
+
+    <div class="profile-actions">
+      <button
+        *ngIf="!isEditing"
+        type="button"
+        class="btn btn-primary"
+        (click)="toggleEdit()">
+        <i class="icon">✏️</i>
+        Edit Profile
+      </button>
+
+      <div *ngIf="isEditing" class="edit-actions">
+        <button
+          type="button"
+          class="btn btn-success"
+          [disabled]="isSaving"
+          (click)="saveProfile()">
+          <i class="icon">💾</i>
+          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="toggleEdit()">
+          <i class="icon">❌</i>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-content">
+    <div class="profile-sections">
+      <!-- Basic Information -->
+      <div class="profile-section">
+        <h2>Basic Information</h2>
+
+        <form [formGroup]="profileForm" class="profile-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">First Name *</label>
+              <input
+                type="text"
+                id="firstName"
+                formControlName="firstName"
+                [readonly]="!isEditing"
+                class="form-control"
+                [class.error]="getFieldError('firstName')">
+              <div class="error-message" *ngIf="getFieldError('firstName')">
+                {{ getFieldError('firstName') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Last Name *</label>
+              <input
+                type="text"
+                id="lastName"
+                formControlName="lastName"
+                [readonly]="!isEditing"
+                class="form-control"
+                [class.error]="getFieldError('lastName')">
+              <div class="error-message" *ngIf="getFieldError('lastName')">
+                {{ getFieldError('lastName') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              [value]="user?.email"
+              readonly
+              class="form-control readonly">
+            <small class="help-text">Email cannot be changed</small>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input
+                type="tel"
+                id="phone"
+                formControlName="phone"
+                [readonly]="!isEditing"
+                class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="dateOfBirth">Date of Birth</label>
+              <input
+                type="date"
+                id="dateOfBirth"
+                formControlName="dateOfBirth"
+                [readonly]="!isEditing"
+                class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea
+              id="bio"
+              formControlName="bio"
+              [readonly]="!isEditing"
+              rows="4"
+              class="form-control"
+              placeholder="Tell us about yourself..."></textarea>
+            <small class="help-text">Maximum 500 characters</small>
+          </div>
+        </form>
+      </div>
+
+      <!-- Professional Information -->
+      <div class="profile-section">
+        <h2>Professional Information</h2>
+
+        <form [formGroup]="profileForm" class="profile-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="jobTitle">Job Title</label>
+              <input
+                type="text"
+                id="jobTitle"
+                formControlName="jobTitle"
+                [readonly]="!isEditing"
+                class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="company">Company</label>
+              <input
+                type="text"
+                id="company"
+                formControlName="company"
+                [readonly]="!isEditing"
+                class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="location">Location</label>
+              <input
+                type="text"
+                id="location"
+                formControlName="location"
+                [readonly]="!isEditing"
+                class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="website">Website</label>
+              <input
+                type="url"
+                id="website"
+                formControlName="website"
+                [readonly]="!isEditing"
+                class="form-control">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Social Media -->
+      <div class="profile-section">
+        <h2>Social Media</h2>
+
+        <div formGroupName="socialMedia" class="profile-form">
+          <div class="form-group">
+            <label for="linkedin">LinkedIn</label>
+            <input
+              type="url"
+              id="linkedin"
+              formControlName="linkedin"
+              [readonly]="!isEditing"
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="twitter">Twitter</label>
+            <input
+              type="url"
+              id="twitter"
+              formControlName="twitter"
+              [readonly]="!isEditing"
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="github">GitHub</label>
+            <input
+              type="url"
+              id="github"
+              formControlName="github"
+              [readonly]="!isEditing"
+              class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="profile-section">
+        <h2>Preferences</h2>
+
+        <div formGroupName="preferences" class="profile-form">
+          <div class="form-group">
+            <label for="language">Language</label>
+            <select
+              id="language"
+              formControlName="language"
+              [disabled]="!isEditing"
+              class="form-control">
+              <option *ngFor="let lang of languages" [value]="lang.code">
+                {{ lang.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="checkbox-group">
+            <label class="checkbox-wrapper">
+              <input
+                type="checkbox"
+                formControlName="emailNotifications"
+                [disabled]="!isEditing">
+              <span class="checkmark"></span>
+              Email Notifications
+            </label>
+
+            <label class="checkbox-wrapper">
+              <input
+                type="checkbox"
+                formControlName="darkMode"
+                [disabled]="!isEditing">
+              <span class="checkmark"></span>
+              Dark Mode
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security -->
+      <div class="profile-section">
+        <h2>Security</h2>
+
+        <form [formGroup]="passwordForm" class="profile-form">
+          <div class="form-group">
+            <label for="currentPassword">Current Password</label>
+            <input
+              type="password"
+              id="currentPassword"
+              formControlName="currentPassword"
+              class="form-control"
+              [class.error]="getPasswordError('currentPassword')">
+            <div class="error-message" *ngIf="getPasswordError('currentPassword')">
+              {{ getPasswordError('currentPassword') }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <input
+                type="password"
+                id="newPassword"
+                formControlName="newPassword"
+                class="form-control"
+                [class.error]="getPasswordError('newPassword')">
+              <div class="error-message" *ngIf="getPasswordError('newPassword')">
+                {{ getPasswordError('newPassword') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                class="form-control"
+                [class.error]="getPasswordError('confirmPassword')">
+              <div class="error-message" *ngIf="getPasswordError('confirmPassword')">
+                {{ getPasswordError('confirmPassword') }}
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-warning"
+            [disabled]="passwordForm.invalid || isLoading"
+            (click)="changePassword()">
+            <i class="icon">🔒</i>
+            {{ isLoading ? 'Changing...' : 'Change Password' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <div class="spinner large"></div>
+    <p>Loading profile...</p>
+  </div>
+</ng-template>

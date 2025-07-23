@@ -1,0 +1,313 @@
+<div class="product-list-container">
+  <!-- Header with search and controls -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Products</h1>
+      <div class="header-controls">
+        <div class="search-container">
+          <input
+            type="text"
+            placeholder="Search products..."
+            class="search-input"
+            [value]="filters.searchQuery"
+            (input)="onSearchChange($any($event.target).value || '')">
+          <i class="search-icon">🔍</i>
+        </div>
+
+        <button
+          class="filter-toggle-btn"
+          (click)="toggleFilters()"
+          [class.active]="showFilters">
+          <i class="icon">🔽</i>
+          Filters
+          <span class="filter-count" *ngIf="getActiveFiltersCount() > 0">
+            {{ getActiveFiltersCount() }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <!-- Filters Sidebar -->
+    <aside class="filters-sidebar" [class.hidden]="!showFilters">
+      <div class="filters-header">
+        <h3>Filters</h3>
+        <button
+          class="clear-all-btn"
+          (click)="clearAllFilters()"
+          *ngIf="getActiveFiltersCount() > 0">
+          Clear All
+        </button>
+      </div>
+
+      <!-- Categories Filter -->
+      <div class="filter-group">
+        <div class="filter-title">
+          <h4>Categories</h4>
+          <button
+            class="clear-filter-btn"
+            (click)="clearFilter('categories')"
+            *ngIf="filters.categories?.length">
+            ✕
+          </button>
+        </div>
+        <div class="filter-options">
+          <label
+            *ngFor="let category of categories"
+            class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="isCategorySelected(category.id)"
+              (change)="onCategoryChange(category.id, $any($event.target).checked)">
+            <span class="checkmark"></span>
+            {{ category.name }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Brands Filter -->
+      <div class="filter-group">
+        <div class="filter-title">
+          <h4>Brands</h4>
+          <button
+            class="clear-filter-btn"
+            (click)="clearFilter('brands')"
+            *ngIf="filters.brands?.length">
+            ✕
+          </button>
+        </div>
+        <div class="filter-options">
+          <label
+            *ngFor="let brand of brands"
+            class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="isBrandSelected(brand.value)"
+              (change)="onBrandChange(brand.value, $any($event.target).checked)">
+            <span class="checkmark"></span>
+            {{ brand.label }}
+            <span class="count">({{ brand.count }})</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Price Range Filter -->
+      <div class="filter-group">
+        <div class="filter-title">
+          <h4>Price Range</h4>
+          <button
+            class="clear-filter-btn"
+            (click)="clearFilter('price')"
+            *ngIf="filters.priceRange && (filters.priceRange.min !== priceRange.min || filters.priceRange.max !== priceRange.max)">
+            ✕
+          </button>
+        </div>
+        <div class="price-filter">
+          <div class="price-inputs">
+            <input
+              type="number"
+              placeholder="Min"
+              class="price-input"
+              [(ngModel)]="filters.priceRange!.min"
+              (ngModelChange)="onPriceRangeChange()">
+            <span class="price-separator">-</span>
+            <input
+              type="number"
+              placeholder="Max"
+              class="price-input"
+              [(ngModel)]="filters.priceRange!.max"
+              (ngModelChange)="onPriceRangeChange()">
+          </div>
+          <div class="price-range-display">
+            {{ formatPrice(filters.priceRange?.min || 0) }} - {{ formatPrice(filters.priceRange?.max || 10000) }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Rating Filter -->
+      <div class="filter-group">
+        <div class="filter-title">
+          <h4>Minimum Rating</h4>
+          <button
+            class="clear-filter-btn"
+            (click)="clearFilter('rating')"
+            *ngIf="filters.minRating && filters.minRating > 0">
+            ✕
+          </button>
+        </div>
+        <div class="rating-filter">
+          <div
+            *ngFor="let rating of [5,4,3,2,1]"
+            class="rating-option"
+            [class.active]="filters.minRating === rating"
+            (click)="onRatingFilterChange(rating)">
+            <div class="stars">
+              <span
+                *ngFor="let star of generateStarArray(rating)"
+                class="star"
+                [class.filled]="isStarFilled(star, rating)">
+                ★
+              </span>
+            </div>
+            <span class="rating-text">{{ rating }}+ stars</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stock Filter -->
+      <div class="filter-group">
+        <div class="filter-title">
+          <h4>Availability</h4>
+          <button
+            class="clear-filter-btn"
+            (click)="clearFilter('stock')"
+            *ngIf="filters.inStockOnly">
+            ✕
+          </button>
+        </div>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [(ngModel)]="filters.inStockOnly"
+            (ngModelChange)="onStockFilterChange()">
+          <span class="checkmark"></span>
+          In Stock Only
+        </label>
+      </div>
+
+      <!-- Tags Filter -->
+      <div class="filter-group">
+        <div class="filter-title">
+          <h4>Tags</h4>
+          <button
+            class="clear-filter-btn"
+            (click)="clearFilter('tags')"
+            *ngIf="filters.tags?.length">
+            ✕
+          </button>
+        </div>
+        <div class="tag-filter">
+          <button
+            *ngFor="let tag of tags"
+            class="tag-button"
+            [class.active]="isTagSelected(tag.value)"
+            (click)="onTagChange(tag.value, !isTagSelected(tag.value))">
+            {{ tag.label }}
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Products Content -->
+    <main class="products-content">
+      <!-- Results Header -->
+      <div class="results-header">
+        <div class="results-info">
+          <span class="result-count">{{ resultCount }} products found</span>
+        </div>
+
+        <div class="sort-controls">
+          <select
+            class="sort-select"
+            [(ngModel)]="filters.sortBy"
+            (ngModelChange)="onSortChange()">
+            <option *ngFor="let option of sortOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+
+          <button
+            class="sort-order-btn"
+            (click)="toggleSortOrder()"
+            [title]="filters.sortOrder === 'asc' ? 'Sort Ascending' : 'Sort Descending'">
+            <i class="icon">{{ filters.sortOrder === 'asc' ? '⬆️' : '⬇️' }}</i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-container" *ngIf="loading">
+        <div class="spinner"></div>
+        <p>Loading products...</p>
+      </div>
+
+      <!-- No Results -->
+      <div class="no-results" *ngIf="noResults && !loading">
+        <div class="no-results-content">
+          <i class="icon">📦</i>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or search query</p>
+          <button class="btn btn-primary" (click)="clearAllFilters()">
+            Clear All Filters
+          </button>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid" *ngIf="!loading && !noResults">
+        <article
+          *ngFor="let product of products"
+          class="product-card"
+          [class.out-of-stock]="!product.inStock">
+
+          <div class="product-image">
+            <img [src]="product.imageUrl" [alt]="product.name" loading="lazy">
+            <div class="product-badges">
+              <span class="badge sale" *ngIf="product.originalPrice">Sale</span>
+              <span class="badge new" *ngIf="product.tags.includes('new')">New</span>
+              <span class="badge bestseller" *ngIf="product.tags.includes('bestseller')">Bestseller</span>
+            </div>
+            <div class="stock-overlay" *ngIf="!product.inStock">
+              <span>Out of Stock</span>
+            </div>
+          </div>
+
+          <div class="product-info">
+            <div class="product-category">{{ product.category.name }}</div>
+            <h3 class="product-name">{{ product.name }}</h3>
+            <p class="product-description">{{ product.description }}</p>
+
+            <div class="product-rating">
+              <div class="stars">
+                <span
+                  *ngFor="let star of generateStarArray(product.rating)"
+                  class="star"
+                  [class.filled]="isStarFilled(star, product.rating)"
+                  [class.half]="isStarHalfFilled(star, product.rating)">
+                  ★
+                </span>
+              </div>
+              <span class="rating-text">{{ product.rating }} ({{ product.reviewCount }})</span>
+            </div>
+
+            <div class="product-tags" *ngIf="product.tags.length">
+              <span
+                *ngFor="let tag of product.tags.slice(0, 3)"
+                class="tag">
+                {{ tag }}
+              </span>
+            </div>
+
+            <div class="product-footer">
+              <div class="product-price">
+                <span class="current-price">{{ formatPrice(product.price) }}</span>
+                <span class="original-price" *ngIf="product.originalPrice">
+                  {{ formatPrice(product.originalPrice) }}
+                </span>
+              </div>
+
+              <div class="product-actions">
+                <button
+                  class="btn btn-primary"
+                  [disabled]="!product.inStock">
+                  {{ product.inStock ? 'Add to Cart' : 'Out of Stock' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+</div>
